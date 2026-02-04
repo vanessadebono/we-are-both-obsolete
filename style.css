@@ -1,0 +1,1285 @@
+/* lock page while loading */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+
+/* ===== LOADING SCREEN BASE ===== */
+.loading-screen{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+
+  background: #0000c5;     /* same blue vibe as the example */
+  overflow: hidden;
+  z-index: 999999;
+}
+
+/* VHS-style loading text */
+.loading-screen .loading-text{
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-transform: lowercase;
+
+  will-change: text-shadow;
+  animation: rgbText 2s steps(9) infinite alternate;
+}
+
+@keyframes rgbText {
+  0% {
+    text-shadow:
+      -1px 1px 8px rgba(255,255,255,0.6),
+      1px -1px 8px rgba(255,255,255,0.6),
+      0 0 2px rgba(0,0,197,0.8),      /* brand blue */
+      0 0 3px rgba(192,192,192,0.8),  /* brand grey */
+      0 0 3px rgba(255,255,255,0.7);
+  }
+
+  50% {
+    text-shadow:
+      -4px 0 1px rgba(0,0,197,0.9),    /* blue shift */
+      0 4px 1px rgba(192,192,192,0.9),
+      4px 0 1px rgba(255,255,255,0.9),
+      0 -4px 1px rgba(0,0,197,0.7),
+      -4px 0 1px rgba(192,192,192,0.7);
+  }
+
+  100% {
+    text-shadow:
+      4px 0 1px rgba(0,0,197,0.9),
+      0 -4px 1px rgba(192,192,192,0.9),
+      -4px 0 1px rgba(255,255,255,0.9),
+      0 4px 1px rgba(0,0,197,0.7),
+      4px 0 1px rgba(192,192,192,0.7);
+  }
+}
+
+
+/* subtle vignette overlay like the example */
+.loading-screen::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.4) 100%);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Center your bin + loading text */
+.loading-screen .flex-container{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  z-index: 100; /* above noise/scanlines */
+}
+
+/* ===== NOISE LAYERS ===== */
+.loading-screen .noise{
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.loading-screen .noise::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  /* Use a noise image (best as a local file)
+     Put noise.png in your project folder and use this: */
+  background-image: url("noise.png");
+  background-repeat: repeat;
+  background-size: 200%;
+}
+
+.loading-screen .noise.noise-moving{
+  opacity: 0.55;
+  z-index: 40;
+}
+
+.loading-screen .noise.noise-moving::before{
+  animation: noiseMove 1s infinite alternate;
+  will-change: background-position;
+}
+
+/* ===== SCANLINES ===== */
+.loading-screen .scanlines{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0.45;
+  animation: scanOpacity 3s linear infinite;
+}
+
+.loading-screen .scanlines::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.5) 51%
+  );
+  background-size: 100% 4px;
+  animation: scanlinesMove 0.2s linear infinite;
+}
+
+/* ===== YOUR LOADING UI (bin, optional text) ===== */
+.loading-screen .loading-ui{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.loading-screen .loading-bin{
+  width: 120px;
+  height: auto;
+  cursor: pointer;
+  user-select: none;
+  animation: spin 1.6s linear infinite;
+}
+
+.loading-screen .loading-text{
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.8);
+  text-transform: lowercase;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes noiseMove{
+  0%, 100% { background-position: 0 0; }
+  10% { background-position: -5% -10%; }
+  20% { background-position: -15% 5%; }
+  30% { background-position: 7% -25%; }
+  40% { background-position: 20% 25%; }
+  50% { background-position: -25% 10%; }
+  60% { background-position: 15% 5%; }
+  70% { background-position: 0 15%; }
+  80% { background-position: 25% 35%; }
+  90% { background-position: -10% 10%; }
+}
+
+@keyframes scanOpacity{
+  0% {opacity: .45;}
+  20% {opacity:.25;}
+  35% {opacity:.38;}
+  50% {opacity:.6;}
+  60% {opacity:.3;}
+  80% {opacity:.52;}
+  100% {opacity:.45;}
+}
+
+@keyframes scanlinesMove{
+  from{
+    background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,.5) 51%);
+    background-size: 100% 4px;
+  }
+  to{
+    background: linear-gradient(to bottom, rgba(0,0,0,.5) 50%, transparent 51%);
+    background-size: 100% 4px;
+  }
+}
+
+@keyframes spin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
+}
+
+
+
+
+/* =========================
+   GLOBAL
+========================= */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+}
+
+.site-wrapper {
+  width: 1440px;
+  height: 9200px;
+
+  margin: 0 auto;       /* center on screen */
+  position: relative;
+
+  overflow: hidden;     /* THIS is the magic */
+}
+
+
+
+/* =========================
+   FOOTER / CONTACT SECTION
+========================= */
+.msatext {
+  /* REQUIRED so it can sit above images */
+  position: absolute;     /* locks it to the viewport */
+  z-index: 9999;
+
+  /* POSITION (move it around the page) */
+  top: 9038px;      /* smaller = higher, bigger = lower */
+  left: 200px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 15px;     /* text size */
+  font-weight: 200;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #c0c0c0;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: left;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 672px;        /* makes text wrap nicely */
+}
+
+.social {
+  text-decoration: none; /* removes underline */
+
+  /* REQUIRED so it can sit above images */
+  position: absolute;     /* locks it to the viewport */
+  z-index: 9999;
+
+  /* POSITION (move it around the page) */
+  top: 8820px;      /* smaller = higher, bigger = lower */
+  left: 207px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 26px;     /* text size */
+  font-weight: 700;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #c0c0c0;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: left;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 426px;        /* makes text wrap nicely */
+}
+
+.instagram,
+.facebook {
+  color: #c0c0c0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.instagram:hover,
+.facebook:hover {
+  opacity: 0.7;
+}
+
+
+.whiteg {
+  position: absolute;
+  z-index: 1002;
+
+  left: 80%;
+  top: 7849px;        /* change this to move up/down */
+
+  transform: translateX(-50%);
+
+  width: 1247px;      /* change size here */
+  height: auto;
+
+  clip-path: inset(0 330px 0 0);
+}
+
+.docstudio {
+  position: absolute;
+  z-index: 1002;
+
+  left: 9%;
+  top: 8849px;        /* change this to move up/down */
+
+  transform: translateX(-50%);
+
+  width: 90.87px;      /* change size here */
+  height: auto;
+}
+
+.instagram {
+  text-decoration: none; /* removes underline */
+  color: #c0c0c0;        /* same colour as before */
+}
+
+.msa {
+  position: absolute;
+  z-index: 1002;
+
+  left: 8%;
+  top: 9049px;        /* change this to move up/down */
+
+  transform: translateX(-50%);
+
+  width: 130.37px;      /* change size here */
+  height: auto;
+}
+
+.contact {
+  /* REQUIRED so it can sit above images */
+  position: absolute;     /* locks it to the viewport */
+  z-index: 9999;
+
+  /* POSITION (move it around the page) */
+  top: 8338px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 145px;     /* text size */
+  font-weight: 400;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #c0c0c0;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: right;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.circle {
+  position: absolute;
+  top: 9338px;
+  left: 1548px;
+  width: 1247px;
+  height: 1136px;
+  background-color: #0000c5;
+  z-index: 1001;
+}
+
+.bottomblue {
+  position: relative;
+  top: 7339px;
+  left: 0px;
+  width: 1440px;
+  height: 1606px;
+  background-color: #0000c5;
+  z-index: 1000;
+}
+
+.pixels {
+  position: absolute;
+  z-index: 1002;
+
+  left: 50%;
+  top: 8060px;        /* change this to move up/down */
+
+  transform: translateX(-50%);
+
+  width: 1440px;      /* change size here */
+  height: auto;
+}
+
+.pixel2 {
+  position: absolute;
+  z-index: 1002;
+
+  left: 50%;
+  top: 900px;        /* change this to move up/down */
+
+  transform: translateX(-50%);
+
+  width: 1440px;      /* change size here */
+  height: auto;
+}
+
+
+/* =========================
+   GALLERY SECTION
+========================= */
+.gallery {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 6351px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 145px;     /* text size */
+  font-weight: 400;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #0000c5;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: right;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+/* ===== Glide reveal effect for gallery images ===== */
+
+/* default state */
+.gals .reveal {
+  --active: 0;
+
+  /* less blur (optional) */
+  filter: blur(calc((1 - var(--active)) * 8px));
+
+  /* MUCH smaller scale change */
+  transform: scale(calc(0.98 + (var(--active) * 0.02)));
+
+  transition: transform 0.45s ease, filter 0.45s ease;
+}
+
+/* hovered image becomes clear */
+.gals .reveal:hover {
+  --active: 1;
+  z-index: 9999;
+}
+
+
+.gal {
+  position: absolute;
+
+  left: 3%;
+  top: 6664px;        /* change this to move up/down */
+
+  width: 537px;      /* change size here */
+  height: auto;
+
+  z-index: 2;
+}
+
+.gal1 {
+  position: absolute;
+
+  left: 40%;
+  top: 6664px;        /* change this to move up/down */
+
+  width: 790px;      /* change size here */
+  height: auto;
+
+  z-index: 2;
+}
+
+.gal2 {
+  position: absolute;
+
+  left: 5.3%;
+  top: 7242px;        /* change this to move up/down */
+
+  width: 791px;      /* change size here */
+  height: auto;
+
+  z-index: 2;
+}
+
+.gal3 {
+  position: absolute;
+
+  left: 60%;
+  top: 7242px;        /* change this to move up/down */
+
+  width: 537px;      /* change size here */
+  height: auto;
+
+  z-index: 2;
+}
+
+
+
+
+/* =========================
+   OBJECTS SECTION
+========================= */
+.objects {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 5489px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 145px;     /* text size */
+  font-weight: 400;   /* 100–900 */
+  font-style: bold; /* normal | italic */
+
+  /* COLOR */
+  color: #0000c5;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: right;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+/* Make the row images feel clickable without affecting hover glide */
+.image-row img { cursor: pointer; }
+
+/* ===== LIGHTBOX ===== */
+.lightbox{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.lightbox.is-open{ display: flex; }
+
+.lightbox-inner{
+  position: relative;
+  width: min(92vw, 1200px);
+  height: min(92vh, 900px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-img{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.lightbox-close{
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.lightbox-close:hover{ opacity: 0.85; }
+
+.lightbox-close{
+  position: fixed;
+  top: 25px;
+  right: 319px;
+
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  cursor: pointer;
+
+  z-index: 2147483647;   /* ALWAYS on top */
+  pointer-events: auto;  /* clickable even with overlays */
+}
+
+.lightbox-close img{
+  width: 50px;          /* adjust size */
+  height: auto;
+  display: block;
+}
+
+
+
+.image-row{
+  position: absolute;     /* lets you place it anywhere + enables z-index */
+  left: 5px;            /* change this */
+  top: 5950px;             /* change this */
+
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  z-index: 20000;         /* on top of everything */
+
+
+}
+.image-row img{
+  height: 172px;   /* 120 ÷ 3 = 40 */
+  width: auto;
+  display: block;
+}
+/* --- GLIDE / DOCK HOVER SETTINGS --- */
+:root{
+  --lerp-0: 1;
+  --lerp-1: 0.6;
+  --lerp-2: 0.3;
+  --lerp-3: 0.12;
+  --lerp-4: 0;
+}
+
+/* make it feel like a dock (bottom anchored) */
+.image-row{
+  align-items: flex-end;      /* override your align-items:center */
+}
+
+/* base animation on all images */
+.image-row img{
+  transform-origin: 50% 100%;
+  transition: transform 0.25s;
+  will-change: transform;
+
+  transform:
+    translateY(calc(var(--lerp, 0) * -50%))
+    scale(calc(1 + (var(--lerp, 0) * 0.5)));
+
+    filter: none; /* keeps them sharp */
+}
+
+/* hovered image gets strongest effect */
+.image-row img:hover{
+  --lerp: var(--lerp-0);
+  z-index: 5;
+}
+
+/* 1 away neighbours */
+.image-row img:has(+ img:hover),
+.image-row img:hover + img{
+  --lerp: var(--lerp-1);
+  z-index: 4;
+}
+
+/* 2 away neighbours */
+.image-row img:has(+ img + img:hover),
+.image-row img:hover + img + img{
+  --lerp: var(--lerp-2);
+  z-index: 3;
+}
+
+/* 3 away neighbours */
+.image-row img:has(+ img + img + img:hover),
+.image-row img:hover + img + img + img{
+  --lerp: var(--lerp-3);
+  z-index: 2;
+}
+
+
+.gradient {
+  position: absolute;
+
+  left: 50%;
+  top: 5688px;        /* change this to move up/down */
+
+  transform: translateX(-50%);
+
+  width: 3218px;      /* change size here */
+  height: auto;
+
+  z-index: 2;
+
+  clip-path: inset(0 889px 0 889px);
+}
+
+/* =========================
+   INFO SECTION (ABOUT / WHEN / WHERE)
+========================= */
+.graphic-125 {
+  position: absolute;
+
+  left: 50%;
+  top: 900px;        /* change this to move up/down */
+
+  transform: translateX(-50%);
+
+  width: 1440px;      /* change size here */
+  height: auto;
+
+  z-index: 2;
+}
+
+.text-top {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 1220px;      /* smaller = higher, bigger = lower */
+  left: 530px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 42px;     /* text size */
+  font-weight: 400;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #0000c5;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: right;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.about {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 1330px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 145px;     /* text size */
+  font-weight: 400;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #008000;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: right;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.p1 {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 1627px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 24px;     /* text size */
+  font-weight: 200;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #000000;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: left;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.p2 {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 1797px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 17px;     /* text size */
+  font-weight: 200;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #000000;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: centre;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.p3 {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 1945px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 17px;     /* text size */
+  font-weight: 200;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #000000;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: centre;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+
+
+.date {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 2678px;      /* smaller = higher, bigger = lower */
+  left: 870px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 50px;     /* text size */
+  font-weight: 200;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #000000;
+
+  /* SPACING */
+  line-height: 1.0;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: right;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.when {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 2696px;      /* smaller = higher, bigger = lower */
+  left: 1040px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 145px;     /* text size */
+  font-weight: 400;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #008000;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: left;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.place {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 3310px;      /* smaller = higher, bigger = lower */
+  left: 50px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 50px;     /* text size */
+  font-weight: 200;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #000000;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: left;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.where {
+  /* REQUIRED so it can sit above images */
+  position: absolute;
+  z-index: 999;
+
+  /* POSITION (move it around the page) */
+  top: 3110px;      /* smaller = higher, bigger = lower */
+  left: 40px;      /* smaller = left, bigger = right */
+
+  /* FONT */
+  font-family: "Inter", sans-serif;
+  font-size: 145px;     /* text size */
+  font-weight: 400;   /* 100–900 */
+  font-style: normal; /* normal | italic */
+
+  /* COLOR */
+  color: #008000;
+
+  /* SPACING */
+  line-height: 1.2;        /* space between lines */
+  letter-spacing: 0em;     /* space between letters */
+
+  /* ALIGNMENT */
+  text-align: left;        /* left | center | right */
+
+  /* OPTIONAL */
+  max-width: 1446px;        /* makes text wrap nicely */
+}
+
+.pillar {
+  position: absolute;
+  right: -280px;
+  top: 2500px;
+  width: 2007px;
+  height: auto;
+  z-index: 2;
+}
+
+
+.white2{
+  position: absolute;
+
+  /* SAME horizontal reference as pillar */
+  right: -28px;
+
+  /* Push it to the bottom of the pillar */
+  top: calc(2900px + 2007px);
+
+  /* Centre it visually */
+  transform: translateX(-50%);
+  right: -1.9%;
+
+  width: 747px;
+  height: auto;
+
+  z-index: 20000;
+}
+
+/* =========================
+   HEADER / TOP BAR (DUPLICATE LOCATION IN ORIGINAL)
+========================= */
+/* TOP BAR */
+.top-bar {
+  width: 1440px;              /* full page width */
+  height: 64px;
+  background-color: #0000c5;  /* blue rectangle */
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+
+}
+
+.top-bar-frame { 
+  position: fixed;        /* 🔒 fixed element */
+  top: 1;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 1370px;
+  height: 30px;           /* calc(100% - 24px) no longer needed */
+
+  /* PURE GLASS */
+  background: rgba(255, 255, 255, 0.08); /* transparent, no tint */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(192, 192, 192, 0.5);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 16px;
+
+  font-size: 20px;
+  font-weight: 370;
+  color: #c0c0c0;
+
+  z-index: 100000;
+}
+
+.home-btn {
+  background: none;
+  border: none;
+  padding: 0;
+
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 370;
+  color: #c0c0c0;
+
+  cursor: pointer;
+}
+
+.home-btn:hover {
+  text-decoration: underline;
+}
+
+
+.contact-btn {
+  background: none;
+  border: none;
+  padding: 0;
+
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 370;
+  color: #c0c0c0;
+
+  cursor: pointer;
+}
+
+.contact-btn:hover {
+  text-decoration: underline;
+}
+
+
+.info-btn {
+  background: none;
+  border: none;
+  padding: 0;
+
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 370;
+  color: #c0c0c0;
+
+  cursor: pointer;
+}
+
+.info-btn:hover {
+  text-decoration: underline;
+}
+
+.top-bar-frame {
+  display: flex;
+  align-items: center;
+}
+
+.home-btn {
+  margin-right: auto; /* pushes the other buttons to the right */
+}
+
+.info-btn {
+  margin-right: 24px; /* space between info and contact */
+}
+
+.top-bar-frame{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* IMPORTANT: override space-between */
+}
+
+/* keep home on the left */
+.home-btn{
+  order: 1;
+}
+
+/* put info on the right, and make it the first thing on the right */
+.info-btn{
+  order: 2;
+  margin-left: auto;     /* THIS pushes info + contact to the right */
+  margin-right: 24px;    /* space between info and contact */
+}
+
+/* put contact after info, still on the right */
+.contact-btn{
+  order: 3;
+}
+
+.info-btn {
+  pointer-events: auto;
+  z-index: 10001;
+}
+
+
+/* =========================
+   HERO / TOP BLUE SECTION
+========================= */
+/* TOP BLUE SECTION */
+.top {
+  width: 1440px;
+  height: 960px;
+  background-color: #0000c5;
+  margin: 0 auto;
+  position: relative;
+  overflow: visible; /* IMPORTANT: allow overlap */
+  z-index: 2;        /* make this section above the middle */
+}
+
+/* FRAME 124 — aligned to bottom */
+.bg-image {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1440px;
+  height: auto;
+  z-index: 1;
+}
+
+/* HERO TEXT */
+.hero-text {
+  position: absolute;
+  left: 40px;
+  top: 60px;
+  z-index: 3;
+  color: #c0c0c0;
+}
+
+.hero-text h1 {
+  margin: 0;
+  font-size: 200px;
+  font-weight: 360;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.hero-sub {
+  margin-top: 24px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.hero-sub strong {
+  font-weight: 600;
+}
+
+/* RIGHT GRAPHIC */
+.graphic-right {
+  position: absolute;
+  right: 210px;
+  top: 120px;
+  width: 520px;
+  height: auto;
+  z-index: 2;
+}
+
+.graphic-right {
+  filter: blur(4px);
+  transition: filter 0.3s ease;
+}
+
+.graphic-right:hover {
+  filter: blur(0);
+}
+
+
+
+
+
+
+
+/* DUPLICATE bg-image RULE IN ORIGINAL */
+.bg-image {
+  position: absolute;
+  left: 0;
+  bottom: -52px;   /* or 0px if you want it flush */
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}
+
+
+/* Pixel strip sits at the bottom of the top section */
+.top{
+  position: relative; /* you already have this */
+  overflow: visible;  /* you already have this */
+}
+
+
+:root{
+  --left-margin: 40px;
+  --right-margin: 50px;
+  --center-x: 50%;
+}
+
+.about { left: var(--left-margin); }
+.objects { left: var(--left-margin); }
+.gallery { left: var(--left-margin); }
+.hero-text { left: var(--left-margin); }
+.hero-sub { left: var(--left-margin); }
+.p1 { left: var(--left-margin); }
+.p2 { left: var(--left-margin); }
+.p3 { left: var(--left-margin); }
+.place { left: var(--left-margin); }
+.contact { left: var(--left-margin); }
+

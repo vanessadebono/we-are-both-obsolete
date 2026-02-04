@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>we are both obsolete</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+ </head>
+ 
+ <body>
+
+  <!-- LOADING OVERLAY -->
+<div class="loading-screen" id="loadingScreen">
+
+  <!-- VHS background layers -->
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+  <div class="noise noise-moving"></div>
+
+  <!-- your existing loading UI (bin + loading text) -->
+  <div class="flex-container">
+    <div class="loading-ui">
+      <img src="Group b.png" class="loading-bin" id="enterBtn" alt="">
+      <div class="loading-text">LOADING...</div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- YOUR EXISTING SITE -->
+<div class="site-wrapper" id="mainSite">
+  <!-- everything you already have goes here --
+
+
+  <div class="site-wrapper">
+
+  <header class="header">
+    <!-- TOP BAR goes here -->
+       <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-frame">
+    <button class="home-btn">home</button>
+    <button class="contact-btn">contact</button>
+    <button class="info-btn">info</button>
+    </div>
+  </div>
+  </header>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    /* =========================
+       BUTTONS
+    ========================= */
+    const homeBtn = document.querySelector(".home-btn");
+    const contactBtn = document.querySelector(".contact-btn");
+    const infoBtn = document.querySelector(".info-btn");
+
+    if (!homeBtn || !contactBtn || !infoBtn) {
+      console.log("Missing button:", { homeBtn, contactBtn, infoBtn });
+      return;
+    }
+
+    /* =========================
+       SCROLL SETTINGS
+    ========================= */
+    const duration = 1400; // one speed for all buttons
+
+    function smoothScrollTo(targetY) {
+      const startY = window.scrollY;
+      const distance = targetY - startY;
+      let startTime = null;
+
+      function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+
+        window.scrollTo(0, startY + distance * progress);
+
+        if (progress < 1) requestAnimationFrame(animation);
+      }
+
+      requestAnimationFrame(animation);
+    }
+
+    /* =========================
+       BUTTON ACTIONS
+    ========================= */
+    homeBtn.addEventListener("click", () => {
+      smoothScrollTo(0);
+    });
+
+    contactBtn.addEventListener("click", () => {
+      const bottom =
+        document.documentElement.scrollHeight - window.innerHeight;
+      smoothScrollTo(bottom);
+    });
+
+    infoBtn.addEventListener("click", () => {
+      smoothScrollTo(2669); // adjust if needed
+    });
+  });
+</script>
+
+
+
+<main>
+
+ <section class="hero">
+      <!-- TOP BLUE SECTION (.top) goes here -->
+
+  <!-- TOP BLUE SECTION -->
+  <div class="top">
+    <!-- Background frame -->
+    <img src="Frame 124.png" alt="Frame background" class="bg-image">
+
+    <!-- Right graphic -->
+    <img src="Group b.png" alt="Pixel graphic" class="graphic-right">
+  </div>
+
+    <!-- Hero text -->
+    <div class="hero-text">
+      <h1>
+        we<br>
+        are<br>
+        both<br>
+        obsolete
+      </h1>
+
+      <p class="hero-sub">
+        An exhibition by<br>
+        <strong>DOC Studio</strong>           
+      </p>
+    </div>
+
+    <img src="pixel.png" alt="Pixel" class="pixels">
+    <img src="pixel2.png" alt="Pixel" class="pixel2">
+
+</section>
+
+<section class="info">
+      <!-- ABOUT / WHEN / WHERE text goes here -->
+
+       <img src="Frame 125.png"  alt="Graphic 125" class="graphic-125">
+
+         <p class="text-top">
+         we are both obsolete reflects on the shared  <br>
+         obsolescence of technology and the human <br>
+         condition in the digital age
+      </p>
+  
+  <p class="about">
+    about
+  </p>
+
+   <p class="p1">
+    Through a series of newly developed works, it invites critical  <br>
+    engagement with the psychological, social, and environmental <br> 
+    costs of technological progress—from the emotional toll of  <br>
+    digital acceleration to the material consequences of planned  <br>
+    obsolescence and e-waste.
+  </p>
+
+    <p class="p2">
+    The works on show span generative video, modified interfaces, sculptural assemblage, and <br>
+    algorithmic sound. Some manipulate obsolete software to create surreal, degraded landscapes; <br>
+    others rewire everyday devices into dysfunctional prototypes or glitch aesthetics. Throughout, <br>
+    physical and digital materials are entangled, printed circuit boards sit alongside brushstrokes <br>
+    while coded behaviours interrupt sculptural forms—blurring the boundary between technological <br>
+    debris and artistic gesture.
+  </p>
+
+     <p class="p3">
+   Please explore the systems that make both machines and people disposable: planned obsolescence, <br>
+   algorithmic burnout, fractured attention, and the quiet violence of constant upgrades. Visitors are <br>
+   invited to reflect on a culture where relevance is engineered to expire by design, not by necessity.
+  </p>
+
+
+    <p class="date">
+  4 February → 3 March <br>
+  2026
+  </p>
+
+    <h1 class="when">
+ when
+  </h1>
+
+   <p class="place">
+  Malta Society of Arts <br>
+Valletta
+  </p>
+
+   <h1 class="where">
+  where
+  </h1>
+
+<img src="AIBIN.png"  alt="pillar" class="pillar">
+
+<img src="whitepin.png"  alt="whitepin" class="white2">
+
+    </section>
+
+       <section class="objects-section">
+      <!-- your object images go here -->
+       <h1 class="objects">
+    objects
+      </h1>
+
+         <img src="Gradientblue.png"  alt="gradient" class="gradient">
+
+</section>
+
+<div class="image-row" id="imageRow">
+  <img src="Component 1.png" alt="comp1" class="comp1" data-full="Frame 1460.png">
+  <img src="Component 2.png" alt="comp2" class="comp2" data-full="Frame 1461.png">
+  <img src="Component 3.png" alt="comp3" class="comp3" data-full="Frame 1462.png">
+  <img src="Component 4.png" alt="comp4" class="comp4" data-full="Frame 1463.png">
+  <img src="Component 5.png" alt="comp5" class="comp5" data-full="Frame 1464.png">
+  <img src="Component 6.png" alt="comp6" class="comp6" data-full="Frame 1465.png">
+  <img src="Component 7.png" alt="comp7" class="comp7" data-full="Frame 1466.png">
+  <img src="Component 8.png" alt="comp8" class="comp8" data-full="Frame 1467.png">
+</div>
+
+    
+
+<section class="gallery-section">
+      <!-- your gallery images go here -->
+
+       <h1 class="gallery">
+    gallery
+      </h1>
+
+ <section class="gals">
+  <img src="Modal.png" alt="gal" class="gal reveal">
+  <img src="Modal-1.png" alt="gal1" class="gal1 reveal">
+  <img src="Modal-2.png" alt="gal2" class="gal2 reveal">
+  <img src="Modal-3.png" alt="gal3" class="gal3 reveal">
+ </section>
+
+
+  </main>
+
+  <footer class="footer">
+    <!-- BOTTOM BLUE / CONTACT / SOCIAL / LOGOS go here -->
+
+       
+
+       <h1 class="contact">
+    contact
+      </h1>  
+
+  <img src="whitegrad.png" alt="white gradient" class="whiteg">
+
+
+
+
+<img src="docstudio.png"  alt="docstudio" class="docstudio">
+<img src="msa.png"  alt="msa" class="msa">
+
+<p class="social">
+  docstudio.space<br>
+info@docstudio.space<br>
+
+<a href="https://www.instagram.com/docstudio__/" target="_blank" class="instagram">
+  instagram 
+</a> <br>
+<a href="https://www.facebook.com/people/DOC-Studio/61562051991425/" target="_blank" class="facebook">
+facebook 
+</a>
+
+</p>
+
+    <p class="msatext">
+  The Malta Society of Arts was established in 1852, and is Malta’s <br>
+  oldest institution for the promotion of the arts and crafts. The <br>
+  MSA runs an annual programme of art exhibitions and music <br>
+  concerts. It is also home to a school for education in fine art, <br>
+  craft and music.
+  </p>
+
+   <div class="bottomblue">
+</div>
+  </footer>
+
+  </div>
+
+  <script>
+  const graphicRight = document.querySelector(".graphic-right");
+
+  if (graphicRight) {
+    graphicRight.addEventListener(
+      "mouseenter",
+      () => {
+        graphicRight.classList.add("is-clear");
+      },
+      { once: true }
+    );
+  }
+</script>
+
+<script>
+  const loadingScreen = document.getElementById("loadingScreen");
+  const enterBtn = document.getElementById("enterBtn");
+
+  // disable scrolling while loading screen is visible
+  document.body.style.overflow = "hidden";
+
+  if (enterBtn && loadingScreen) {
+    enterBtn.addEventListener("click", () => {
+      loadingScreen.style.display = "none";
+      document.body.style.overflow = "auto";
+    });
+  }
+</script>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-inner" role="dialog" aria-modal="true">
+    
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+  <img src="Button.png" alt="close">
+</button>
+
+    <img class="lightbox-img" id="lightboxImg" alt="">
+  </div>
+</div>
+<script>
+  (function () {
+    const row = document.getElementById("imageRow");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const closeBtn = document.getElementById("lightboxClose");
+
+    if (!row || !lightbox || !lightboxImg || !closeBtn) return;
+
+    function openLightbox(src) {
+      lightboxImg.src = src;
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      lightboxImg.src = "";
+      document.body.style.overflow = "auto";
+    }
+
+    // Click a component image (keeps your hover glide intact)
+    row.addEventListener("click", (e) => {
+      const img = e.target.closest("img");
+      if (!img || !row.contains(img)) return;
+
+      const fullSrc = img.getAttribute("data-full");
+      if (fullSrc) openLightbox(fullSrc);
+    });
+
+    // Close button
+    closeBtn.addEventListener("click", closeLightbox);
+
+    // Click outside image closes
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    // ESC closes
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && lightbox.classList.contains("is-open")) {
+        closeLightbox();
+      }
+    });
+  })();
+</script>
+
+</body>
+
+</html>
+
+
+
